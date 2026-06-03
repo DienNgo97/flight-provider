@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>VN Airlines Mock</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, Arial, sans-serif; margin: 0; color: #16263a; }
+        .hero { background: linear-gradient(135deg, #0b5fa5, #1a8fd1); color: #fff; padding: 48px 24px; }
+        .wrap { max-width: 880px; margin: 0 auto; }
+        .brand { font-size: 26px; font-weight: 700; letter-spacing: .5px; }
+        .tag { opacity: .9; margin-top: 6px; }
+        .card { background: #fff; border-radius: 12px; padding: 24px; margin: -32px auto 0;
+                max-width: 880px; box-shadow: 0 10px 30px rgba(0,0,0,.12); }
+        form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end; }
+        label { font-size: 12px; color: #5b6b7d; display: block; margin-bottom: 4px; }
+        select, input { width: 100%; padding: 10px; border: 1px solid #cdd7e1; border-radius: 8px; font-size: 14px; }
+        button { background: #ff7a00; color: #fff; border: 0; padding: 11px 20px; border-radius: 8px;
+                 font-size: 14px; font-weight: 600; cursor: pointer; }
+        .note { max-width: 880px; margin: 24px auto; color: #5b6b7d; font-size: 13px; }
+        @media (max-width: 640px){ form { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="hero">
+    <div class="wrap">
+        <div class="brand">✈ VN Airlines <span style="opacity:.7">(Mock)</span></div>
+        <div class="tag">Trang web giả lập hãng bay — dùng cho Dididi Booking Platform</div>
+    </div>
+</div>
+
+<div class="card">
+    <form action="/flights" method="get">
+        <div>
+            <label>Điểm đi</label>
+            <select name="from">
+                <option value="HAN">HAN — Hà Nội</option>
+                <option value="SGN">SGN — TP.HCM</option>
+                <option value="DAD">DAD — Đà Nẵng</option>
+            </select>
+        </div>
+        <div>
+            <label>Điểm đến</label>
+            <select name="to">
+                <option value="SGN">SGN — TP.HCM</option>
+                <option value="HAN">HAN — Hà Nội</option>
+                <option value="DAD">DAD — Đà Nẵng</option>
+            </select>
+        </div>
+        <div>
+            <label>Ngày bay</label>
+            <input type="date" name="date" value="2026-07-01"/>
+        </div>
+        <button type="submit">Tìm chuyến bay</button>
+    </form>
+</div>
+
+<p class="note">
+    Đây là website em mock cho hãng bay. Booking Platform sẽ pull dữ liệu qua REST API
+    (<code>/api/flights/search</code>) với header <code>X-API-KEY</code>.
+</p>
+</body>
+</html>

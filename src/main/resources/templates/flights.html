@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Kết quả tìm chuyến bay — VN Airlines Mock</title>
+    <style>
+        body { font-family: system-ui, -apple-system, Arial, sans-serif; margin: 0; color: #16263a; background: #f4f7fa; }
+        .bar { background: #0b5fa5; color: #fff; padding: 16px 24px; }
+        .bar a { color: #fff; text-decoration: none; font-weight: 600; }
+        .wrap { max-width: 920px; margin: 24px auto; padding: 0 16px; }
+        .meta { color: #5b6b7d; margin-bottom: 16px; }
+        .flight { background: #fff; border: 1px solid #e3e9ef; border-radius: 10px; padding: 16px 18px;
+                  margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .route { font-weight: 700; font-size: 16px; }
+        .sub { color: #5b6b7d; font-size: 13px; margin-top: 4px; }
+        .price { color: #ff7a00; font-weight: 700; font-size: 18px; }
+        .seats { font-size: 12px; color: #5b6b7d; }
+        .btn { display:inline-block; margin-top: 6px; background:#0b5fa5; color:#fff; padding:7px 14px;
+               border-radius: 7px; text-decoration:none; font-size: 13px; }
+        .empty { background:#fff; border:1px dashed #cdd7e1; border-radius:10px; padding:32px; text-align:center; color:#5b6b7d; }
+    </style>
+</head>
+<body>
+<div class="bar"><a href="/">← VN Airlines (Mock)</a></div>
+<div class="wrap">
+    <div class="meta">
+        <span th:if="${from != null}">Từ <b th:text="${from}"></b></span>
+        <span th:if="${to != null}">→ <b th:text="${to}"></b></span>
+        <span th:if="${date != null}"> · ngày <b th:text="${date}"></b></span>
+        · <span th:text="${#lists.size(flights)}">0</span> chuyến
+    </div>
+
+    <div th:if="${#lists.isEmpty(flights)}" class="empty">
+        Không tìm thấy chuyến bay phù hợp.
+    </div>
+
+    <div th:each="f : ${flights}" class="flight">
+        <div>
+            <div class="route">
+                <span th:text="${f.airlineCode}"></span> <span th:text="${f.flightNumber}"></span> ·
+                <span th:text="${f.from}"></span> → <span th:text="${f.to}"></span>
+            </div>
+            <div class="sub">
+                Khởi hành <span th:text="${f.departureTime}"></span> ·
+                máy bay <span th:text="${f.aircraftType}"></span> ·
+                <span class="seats" th:text="'còn ' + ${f.availableSeats} + ' ghế'"></span>
+            </div>
+            <a class="btn" th:href="@{'/flights/' + ${f.id}}">Chi tiết</a>
+        </div>
+        <div style="text-align:right">
+            <div class="price">
+                <span th:text="${#numbers.formatInteger(f.price, 1, 'COMMA')}"></span>
+                <span th:text="${f.currency}"></span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

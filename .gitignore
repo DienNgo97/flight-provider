@@ -1,0 +1,32 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS / Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+.DS_Store
+Thumbs.db
+.env
+
+### Local / secrets (KHONG commit) ###
+application-local.yml
+application-local.yaml
+application-local.properties
+.env.*
+*.local

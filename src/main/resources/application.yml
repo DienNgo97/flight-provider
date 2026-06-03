@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: flight-provider
+  datasource:
+    url: jdbc:mysql://localhost:3306/flight_provider?useUnicode=true&characterEncoding=UTF-8&connectionTimeZone=LOCAL&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${DB_USERNAME:booking}
+    password: ${DB_PASSWORD:booking_dev_pass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    defer-datasource-initialization: true   # tao bang xong moi chay data.sql
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always       # luon chay data.sql (mock data)
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8081
+
+# API key ma booking-platform phai gui qua header X-API-KEY (khop voi cau hinh integration)
+app:
+  api-key: ${FLIGHT_PROVIDER_API_KEY:dev-flight-key-12345}
+
+logging:
+  level:
+    org.hibernate.SQL: warn
