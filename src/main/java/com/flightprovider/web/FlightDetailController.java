@@ -1,6 +1,7 @@
 package com.flightprovider.web;
 
 import com.flightprovider.service.FlightService;
+import com.flightprovider.service.SeatService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +12,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class FlightDetailController {
 
     private final FlightService flightService;
+    private final SeatService seatService;
 
-    public FlightDetailController(FlightService flightService) {
+    public FlightDetailController(FlightService flightService, SeatService seatService) {
         this.flightService = flightService;
+        this.seatService = seatService;
     }
 
     @GetMapping("/flights/{id}")
@@ -21,6 +24,7 @@ public class FlightDetailController {
         return flightService.getById(id)
                 .map(flight -> {
                     model.addAttribute("flight", flight);
+                    model.addAttribute("seatMap", seatService.map(id));
                     return "flight-detail";
                 })
                 .orElseGet(() -> {

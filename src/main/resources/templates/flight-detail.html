@@ -5,16 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Chi tiết chuyến bay — VN Airlines Mock</title>
     <style>
-        body { font-family: system-ui, -apple-system, Arial, sans-serif; margin: 0; color: #16263a; background: #f4f7fa; }
-        .bar { background: #0b5fa5; color: #fff; padding: 16px 24px; }
+        body { font-family: system-ui, -apple-system, Arial, sans-serif; margin: 0; color: #16382a; background: #f4f7fa; }
+        .bar { background: #2f8b60; color: #fff; padding: 16px 24px; }
         .bar a { color: #fff; text-decoration: none; font-weight: 600; }
-        .wrap { max-width: 640px; margin: 24px auto; padding: 0 16px; }
+        .wrap { max-width: 760px; margin: 24px auto; padding: 0 16px; }
         .card { background:#fff; border:1px solid #e3e9ef; border-radius:12px; padding: 24px; }
         h1 { margin: 0 0 4px; font-size: 22px; }
         .route { color:#5b6b7d; margin-bottom: 20px; }
         .row { display:flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eef2f6; }
         .row .k { color:#5b6b7d; }
         .price { color:#ff7a00; font-weight: 700; font-size: 22px; }
+        .muted { color:#5b6b7d; font-size:13px; margin: 4px 0 14px; }
+        .legend { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:#5b6b7d; margin-bottom:14px; }
+        .legend .sw { display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:middle; margin-right:4px; }
+        .sw.biz { background:#fde9c8; border:1px solid #f0b95d; }
+        .sw.eco { background:#e7f5ee; border:1px solid #cce8da; }
+        .sw.held { background:#fff3b0; border:1px solid #e0c200; }
+        .sw.booked { background:#d9dee4; border:1px solid #aab3bd; }
+        .seatgrid { display:grid; grid-template-columns: repeat(6, 1fr); gap:6px; max-width: 380px; }
+        .seat { font-size:10px; text-align:center; padding:7px 0; border-radius:5px;
+                border:1px solid #cce8da; background:#e7f5ee; color:#1d6e4a; user-select:none; }
+        .seat.biz { background:#fde9c8; border-color:#f0b95d; color:#8a5a10; }
+        .seat.held { background:#fff3b0; border-color:#e0c200; color:#7a6500; }
+        .seat.booked { background:#d9dee4; border-color:#aab3bd; color:#5b6b7d; text-decoration: line-through; }
+        .seat.aisle { margin-right:14px; }
     </style>
 </head>
 <body>
@@ -34,6 +48,23 @@
                 <span th:text="${#numbers.formatInteger(flight.price, 1, 'COMMA')}"></span>
                 <span th:text="${flight.currency}"></span>
             </span>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+        <h2 style="margin:0 0 2px;font-size:18px">Sơ đồ chỗ ngồi</h2>
+        <p class="muted">Hàng 1–4: Thương gia · còn lại: Phổ thông. Rê chuột vào ghế để xem giá &amp; trạng thái.</p>
+        <div class="legend">
+            <span><i class="sw biz"></i> Thương gia</span>
+            <span><i class="sw eco"></i> Phổ thông</span>
+            <span><i class="sw held"></i> Đang giữ</span>
+            <span><i class="sw booked"></i> Đã đặt</span>
+        </div>
+        <div class="seatgrid">
+            <div th:each="s : ${seatMap.seats}" class="seat"
+                 th:classappend="|${s.seatClass == 'BUSINESS' ? 'biz' : 'eco'} ${s.status == 'BOOKED' ? 'booked' : (s.status == 'HELD' ? 'held' : '')} ${s.col == 'C' ? 'aisle' : ''}|"
+                 th:title="|${s.code} · ${s.seatClass == 'BUSINESS' ? 'Thương gia' : 'Phổ thông'} · ${#numbers.formatInteger(s.price,1,'COMMA')} ${seatMap.currency} · ${s.status == 'FREE' ? 'Còn trống' : (s.status == 'HELD' ? 'Đang giữ' : 'Đã đặt')}|"
+                 th:text="${s.code}">12A</div>
         </div>
     </div>
 </div>
