@@ -1,5 +1,6 @@
 package com.flightprovider.domain.entity;
 
+import com.flightprovider.domain.FlightStatuses;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -18,6 +19,15 @@ public class FlightBooking {
     @Column(name = "flight_id", nullable = false)
     private Long flightId;
 
+    /**
+     * Hold reference (= booking-platform order code) when this booking was
+     * created from a seat-selection confirm (FP-03). Null for whole-flight
+     * bookings created via {@code book()}. Lets the seat cancel path find and
+     * release the BOOKED seat rows that belong to this booking.
+     */
+    @Column(name = "hold_ref", length = 40)
+    private String holdRef;
+
     @Column(name = "passenger_name", length = 120)
     private String passengerName;
 
@@ -31,7 +41,7 @@ public class FlightBooking {
     private BigDecimal totalPrice;
 
     @Column(nullable = false, length = 20)
-    private String status = "CONFIRMED";
+    private String status = FlightStatuses.BOOKING_CONFIRMED;
 
     @Column(name = "created_at")
     private Instant createdAt = Instant.now();
@@ -42,6 +52,8 @@ public class FlightBooking {
     public void setConfirmationCode(String confirmationCode) { this.confirmationCode = confirmationCode; }
     public Long getFlightId() { return flightId; }
     public void setFlightId(Long flightId) { this.flightId = flightId; }
+    public String getHoldRef() { return holdRef; }
+    public void setHoldRef(String holdRef) { this.holdRef = holdRef; }
     public String getPassengerName() { return passengerName; }
     public void setPassengerName(String passengerName) { this.passengerName = passengerName; }
     public String getContactEmail() { return contactEmail; }

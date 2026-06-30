@@ -5,8 +5,11 @@ import com.flightprovider.api.dto.BookingResponse;
 import com.flightprovider.api.dto.FlightDto;
 import com.flightprovider.api.dto.SeatActionRequest;
 import com.flightprovider.api.dto.SeatHoldRequest;
+import com.flightprovider.service.FlightNotFoundException;
 import com.flightprovider.service.FlightService;
+import com.flightprovider.service.InvalidSeatRequestException;
 import com.flightprovider.service.SeatService;
+import com.flightprovider.service.SeatSoldOutException;
 import com.flightprovider.service.SeatTakenException;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -50,9 +53,10 @@ public class FlightApiController {
     public ResponseEntity<?> book(@PathVariable Long id, @Valid @RequestBody BookingRequest request) {
         try {
             return ResponseEntity.ok(flightService.book(id, request));
-        } catch (IllegalArgumentException ex) {
+        } catch (FlightNotFoundException ex) {
             return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
-        } catch (IllegalStateException ex) {
+        } catch (SeatSoldOutException ex) {
+            // FP-05: sold out / lost the race for the last seats.
             return ResponseEntity.status(409).body(Map.of("error", ex.getMessage()));
         }
     }
@@ -63,7 +67,7 @@ public class FlightApiController {
         try {
             BookingResponse resp = flightService.cancel(confirmationCode);
             return ResponseEntity.ok(resp);
-        } catch (IllegalArgumentException ex) {
+        } catch (FlightNotFoundException ex) {
             return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
         }
     }
@@ -75,17 +79,23 @@ public class FlightApiController {
     public ResponseEntity<?> seats(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(seatService.map(id));
-        } catch (IllegalArgumentException ex) {
+        } catch (FlightNotFoundException ex) {
             return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
         }
     }
 
-    /** Giu cho cac ghe (mac dinh 20 phut). 409 neu co ghe da bi chiem. */
+    /**
+     * Giu cho cac ghe (mac dinh 20 phut).
+     * PROV-X4: input sai (ghe khong hop le / thieu holdRef) -> 400; chuyen
+     * khong ton tai -> 404; ghe da bi chiem -> 409.
+     */
     @PostMapping("/{id}/seats/hold")
     public ResponseEntity<?> holdSeats(@PathVariable Long id, @RequestBody SeatHoldRequest req) {
         try {
             return ResponseEntity.ok(seatService.hold(id, req.seatCodes(), req.holdRef(), req.holdMinutes()));
-        } catch (IllegalArgumentException ex) {
+        } catch (InvalidSeatRequestException ex) {
+            return ResponseEntity.status(400).body(Map.of("error", ex.getMessage()));
+        } catch (FlightNotFoundException ex) {
             return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
         } catch (SeatTakenException | DataIntegrityViolationException ex) {
             return ResponseEntity.status(409).body(Map.of("error", ex.getMessage()));
@@ -99,12 +109,14 @@ public class FlightApiController {
         return ResponseEntity.ok(Map.of("released", true));
     }
 
-    /** Xac nhan ghe (HELD -> BOOKED) khi thanh toan thanh cong. */
+    /** Xac nhan ghe (HELD -> BOOKED) khi thanh toan thanh cong. Tao FlightBooking (FP-03). */
     @PostMapping("/{id}/seats/confirm")
     public ResponseEntity<?> confirmSeats(@PathVariable Long id, @RequestBody SeatActionRequest req) {
         try {
             return ResponseEntity.ok(seatService.confirm(id, req.holdRef()));
-        } catch (IllegalArgumentException ex) {
+        } catch (InvalidSeatRequestException ex) {
+            return ResponseEntity.status(400).body(Map.of("error", ex.getMessage()));
+        } catch (FlightNotFoundException ex) {
             return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
         } catch (SeatTakenException ex) {
             return ResponseEntity.status(409).body(Map.of("error", ex.getMessage()));
